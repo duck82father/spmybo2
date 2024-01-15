@@ -1,13 +1,12 @@
 package kr.or.ysedu.mybo2.answer;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.qos.logback.core.model.Model;
 import jakarta.validation.Valid;
 import kr.or.ysedu.mybo2.question.Question;
 import kr.or.ysedu.mybo2.question.QuestionService;
@@ -28,6 +27,7 @@ public class AnswerController {
 			@Valid AnswerForm answerForm, BindingResult bindingResult) {
 		Question question = this.questionService.getQuestion(id);
 		if (bindingResult.hasErrors()) {
+			model.addAttribute("question", question);
 			return "question_detail";
 		}
 		this.answerService.create(question, answerForm.getContent());
