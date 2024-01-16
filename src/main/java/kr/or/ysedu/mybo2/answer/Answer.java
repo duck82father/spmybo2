@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import kr.or.ysedu.mybo2.question.Question;
+import kr.or.ysedu.mybo2.user.SiteUser;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,14 +20,17 @@ public class Answer {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	public Integer id;
+	private Integer id;
 	
 	@Column(columnDefinition = "TEXT")
-	public String content;
+	private String content;
 	
-	public LocalDateTime createDate;
+	private LocalDateTime createDate;
 	
 	@ManyToOne
-	public Question question;
+	private Question question;
+	
+	@ManyToOne
+	private SiteUser author;
 	
 }

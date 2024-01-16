@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import kr.or.ysedu.mybo2.DataNotFoundException;
+import kr.or.ysedu.mybo2.user.SiteUser;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -40,11 +41,12 @@ public class QuestionService {
 		return this.questionRepository.findAll(pageable);
 	}
 	
-	public void create(String subject, String content) {
+	public void create(String subject, String content, SiteUser user) {
 		Question question = new Question();
 		question.setSubject(subject);
 		question.setContent(content);
 		question.setCreateDate(LocalDateTime.now());
+		question.setAuthor(user);
 		this.questionRepository.save(question);
 	}
 	

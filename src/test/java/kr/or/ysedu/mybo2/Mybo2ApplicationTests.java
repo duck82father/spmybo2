@@ -21,7 +21,7 @@ class Mybo2ApplicationTests {
 		for (int i=0; i<300; i++) {
 			String subject = String.format("%03d 번째 게시물 입니다.", i);
 			String content = "내용 없음";
-			this.questionService.create(subject, content);
+			this.questionService.create(subject, content, null);
 		}
 	}
 }
