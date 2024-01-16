@@ -1,9 +1,11 @@
 package kr.or.ysedu.mybo2.answer;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import kr.or.ysedu.mybo2.DataNotFoundException;
 import kr.or.ysedu.mybo2.question.Question;
 import kr.or.ysedu.mybo2.user.SiteUser;
 import lombok.Getter;
@@ -22,6 +24,25 @@ public class AnswerService {
 		answer.setCreateDate(LocalDateTime.now());
 		answer.setAuthor(author);
 		this.answerRepository.save(answer);
+	}
+	
+	public Answer getAnswer(Integer id) {
+		Optional<Answer> answer = this.answerRepository.findById(id);
+		if (answer.isPresent()) {
+			return answer.get();
+		} else {
+			throw new DataNotFoundException("answer not found");
+		}
+	}
+	
+	public void Modify(Answer answer, String content) {
+		answer.setContent(content);
+		answer.setModifyDate(LocalDateTime.now());
+		this.answerRepository.save(answer);
+	}
+	
+	public void delete(Answer answer) {
+		this.answerRepository.delete(answer);
 	}
 	
 }
