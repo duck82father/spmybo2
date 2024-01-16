@@ -1,7 +1,5 @@
 package kr.or.ysedu.mybo2.question;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
