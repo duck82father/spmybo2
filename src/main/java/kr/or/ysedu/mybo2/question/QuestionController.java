@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.validation.Valid;
+import kr.or.ysedu.mybo2.answer.Answer;
 import kr.or.ysedu.mybo2.answer.AnswerForm;
+import kr.or.ysedu.mybo2.answer.AnswerService;
 import kr.or.ysedu.mybo2.user.SiteUser;
 import kr.or.ysedu.mybo2.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class QuestionController {
 	
 	private final QuestionService questionService;
+	private final AnswerService answerService;
 	private final UserService userService;
 	
 	@GetMapping("/list")
@@ -42,11 +45,17 @@ public class QuestionController {
 	
 	@GetMapping("/detail/{id}")
 	public String detail(Model model, @PathVariable("id") Integer id,
-			AnswerForm answerForm) {
+			AnswerForm answerForm,
+			@RequestParam(value="page", defaultValue = "1") int page,
+			@RequestParam(value="setSortType", defaultValue = "createDate") String setSortType) {		
 		Question question = this.questionService.getQuestion(id);
 		model.addAttribute(question);
+		model.addAttribute("setSortType", setSortType);
+		Page<Answer> paging = this.answerService.getListBySortRule(question, page, setSortType);
+		model.addAttribute("paging", paging);
 		return "question_detail";
 	}
+
 	
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/create")
@@ -92,7 +101,7 @@ public class QuestionController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"수정권한이 없습니다.");
 		}
 		this.questionService.modify(question, questionForm.getSubject(), questionForm.getContent());
-		return String.format("redirect:/question/detail/%s", id);	
+		return String.format("redirect:/question/detail/%s", id);
 	}
 	
 	@PreAuthorize("isAuthenticated()")

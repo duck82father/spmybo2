@@ -9,6 +9,34 @@
             <textarea th:field="*{content}" class="form-control" rows="10"></textarea>
         </div>
         <input type="submit" value="저장하기" class="btn btn-primary my-2">
+
+        <input type="hidden" id="setSortType" name="setSortType" value="">
+		<input type="hidden" id="page" name="page" value="">
+        
     </form>
 </div>
+<script layout:fragment="script" type='text/javascript'>
+document.addEventListener("DOMContentLoaded", function () {
+	
+	function getCookie(cname) {
+		  let name = cname + "=";
+		  let ca = document.cookie.split(';');
+		  for(let i = 0; i < ca.length; i++) {
+		    let c = ca[i];
+		    while (c.charAt(0) == ' ') {
+		      c = c.substring(1);
+		    }
+		    if (c.indexOf(name) == 0) {
+		      return c.substring(name.length, c.length);
+		    }
+		  }
+		  return "";
+	};
+	
+	document.getElementById('setSortType').value = getCookie('setSortType');
+	document.getElementById('page').value = getCookie('page');
+	
+});
+</script>
+
 </html>

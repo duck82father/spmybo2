@@ -5,94 +5,158 @@
     <div class="card my-3">
         <div class="card-body">
             <div class="card-text" th:utext="${@commonUtil.markdown(question.content)}"></div>
+			
+			<div class="row">
+			
+				<div class="col-6 mt-3">
+	            	<a href="javascript:void(0);" class="recommend btn btn-sm btn-outline-secondary"
+	            		th:data-uri="@{|/question/vote/${question.id}|}">추천
+	            		<span class="badge rounded-pill bg-success" th:text="${#lists.size(question.voter)}"></span>
+					</a>
+	            	<a th:href="@{|/question/modify/${question.id}|}" class="btn btn-sm btn-outline-secondary"
+	            		sec:authorize="isAuthenticated()" th:if="${question.author != null and
+	            		#authentication.getPrincipal().getUsername() == question.author.username}" th:text="수정"> 
+	            	</a>
+		            <a href="javascript:void(0);" th:data-uri="@{|/question/delete/${question.id}|}"
+		                class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
+		                th:if="${question.author != null and #authentication.getPrincipal().getUsername() == question.author.username}"
+		                th:text="삭제"></a>
+	            </div>
+	
+	            <div class="col-6 d-flex justify-content-end">
+	                <div th:if="${question.modifyDate != null}" class="badge bg-light text-dark p-2 text-start mx-3">
+	                    <div class="mb-2">modified at</div>
+	                    <div th:text="${#temporals.format(question.modifyDate, 'yyyy-MM-dd HH:mm')}"></div>
+	                </div>
+	            
+	                <div class="badge bg-light text-dark p-2 text-start">
+	                    <div class="mb-2">
+	                    	<span th:if="${question.author != null}" th:text="${question.author.username}"></span>
+	                    </div>
+	                    <div th:text="${#temporals.format(question.createDate, 'yyyy-MM-dd HH:mm')}"></div>
+	                </div>
+	            </div>
+			
+			</div>            
 
-            <div class="d-flex justify-content-end">
-                <div th:if="${question.modifyDate != null}" class="badge bg-light text-dark p-2 text-start mx-3">
-                    <div class="mb-2">modified at</div>
-                    <div th:text="${#temporals.format(question.modifyDate, 'yyyy-MM-dd HH:mm')}"></div>
-                </div>
-            
-                <div class="badge bg-light text-dark p-2 text-start">
-                    <div class="mb-2">
-                    	<span th:if="${question.author != null}" th:text="${question.author.username}"></span>
-                    </div>
-                    <div th:text="${#temporals.format(question.createDate, 'yyyy-MM-dd HH:mm')}"></div>
-                </div>
-            </div>
-            
-            <div class="my-3">
-            	<a href="javascript:void(0);" class="recommend btn btn-sm btn-outline-secondary"
-            		th:data-uri="@{|/question/vote/${question.id}|}">추천
-            		<span class="badge rounded-pill bg-success" th:text="${#lists.size(question.voter)}"></span>
-				</a>
-            	<a th:href="@{|/question/modify/${question.id}|}" class="btn btn-sm btn-outline-secondary"
-            		sec:authorize="isAuthenticated()" th:if="${question.author != null and
-            		#authentication.getPrincipal().getUsername() == question.author.username}" th:text="수정"> 
-            	</a>
-	            <a href="javascript:void(0);" th:data-uri="@{|/question/delete/${question.id}|}"
-	                class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
-	                th:if="${question.author != null and #authentication.getPrincipal().getUsername() == question.author.username}"
-	                th:text="삭제"></a>
-            </div>
             
         </div>
     </div>
     <!-- 답변의 갯수 표시 -->
-    <h5 class="border-bottom my-3 py-2" 
-        th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
+    <div class="row border-bottom">
+    	<a th:id="answerListView"></a>
+	    <div class="col-6">
+	    	<h5 class="my-3 py-2" 
+		        th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
+	    </div>
+	    <div class="col-6 d-flex justify-content-end my-auto px-4 fw-bold fs-6">
+		    <form>
+					<input type="radio" id="createDate" name="fav_language" value="createDate"
+						onclick="setSortType('createDate',7)" th:checked="${setSortType=='createDate'}?'checked'">
+					작성일 기준
+					<input class="ms-2" type="radio" id="votes" name="fav_language" value="votes"
+						onclick="setSortType('voteCount',7)" th:checked="${setSortType=='voteCount'}?'checked'">
+					추천수 기준
+			</form>
+		</div>
+</div> 
     <!-- 답변 반복 시작 -->
-    <div class="card my-3" th:each="answer : ${question.answerList}">
+    
+    <div class="card my-3" th:each="answer : ${paging}">
     	<a th:id="|answer_${answer.id}|"></a>
-        <div class="card-body">
+        <div class="card-body bg-light">
             <div class="card-text" th:utext="${@commonUtil.markdown(answer.content)}"></div>
             
-            <div class="d-flex justify-content-end">
-				<div th:if="${answer.modifyDate != null}" class="badge bg-light text-dark p-2 text-start mx-3">
-                    <div class="mb-2">modified at</div>
-                    <div th:text="${#temporals.format(answer.modifyDate, 'yyyy-MM-dd HH:mm')}"></div>
-                </div>
+			<div class="row">
+			
+				<div class="col-6 mt-3">
+	            	<a href="javascript:void(0);" class="recommend btn btn-sm btn-outline-secondary bg-white"
+	            		th:data-uri="@{|/answer/vote/${answer.id}|}">추천
+	            		<span class="badge rounded-pill bg-success" th:text="${#lists.size(answer.voter)}"></span>
+					</a>
+	            	<a th:href="@{|/answer/modify/${answer.id}}" class="btn btn-sm btn-outline-secondary bg-white"
+	            		sec:authorize="isAuthenticated()"
+	            		th:if="${answer.author != null and #authentication.getPrincipal().getUsername()
+	            		== answer.author.username}" th:text="수정">
+	            	</a>
+					<a href="javascript:void(0);" th:data-uri="@{|/answer/delete/${answer.id}|}"
+	                class="delete btn btn-sm btn-outline-secondary bg-white" sec:authorize="isAuthenticated()"
+	                th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"
+	                th:text="삭제"></a>
+	            </div>
             
-                <div class="badge bg-light text-dark p-2 text-start">
-                    <div class="mb-2">
-                    	<span th:if="${answer.author != null}" th:text="${answer.author.username}"></span>
-                    </div>
-                    <div th:text="${#temporals.format(answer.createDate, 'yyyy-MM-dd HH:mm')}"></div>
-                </div>
-            </div>
-            
-            <div class="my-3">
-            	<a href="javascript:void(0);" class="recommend btn btn-sm btn-outline-secondary"
-            		th:data-uri="@{|/answer/vote/${answer.id}|}">추천
-            		<span class="badge rounded-pill bg-success" th:text="${#lists.size(answer.voter)}"></span>
-				</a>
-            	<a th:href="@{|/answer/modify/${answer.id}}" class="btn btn-sm btn-outline-secondary"
-            		sec:authorize="isAuthenticated()"
-            		th:if="${answer.author != null and #authentication.getPrincipal().getUsername()
-            		== answer.author.username}" th:text="수정">
-            	</a>
-				<a href="javascript:void(0);" th:data-uri="@{|/answer/delete/${answer.id}|}"
-                class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
-                th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"
-                th:text="삭제"></a>
-            </div>
+	            <div class="col-6 d-flex justify-content-end">
+					<div th:if="${answer.modifyDate != null}" class="badge text-dark p-2 text-start" style="background-color:#e9ecef;">
+	                    <div class="mb-2">modified at</div>
+	                    <div th:text="${#temporals.format(answer.modifyDate, 'yyyy-MM-dd HH:mm')}"></div>
+	                </div>
+	            
+	                <div class="badge text-dark p-2 ms-2 text-start bg-success-subtle" style="background-color:#e9ecef;">
+	                    <div class="mb-2">
+	                    	<span th:if="${answer.author != null}" th:text="${answer.author.username}"></span>
+	                    </div>
+	                    <div th:text="${#temporals.format(answer.createDate, 'yyyy-MM-dd HH:mm')}"></div>
+	                </div>
+	            </div>
+	            
+			</div>
 
         </div>
     </div>
     <!-- 답변 반복 끝  -->
-    <!-- 답변 작성 -->
-    <form th:action="@{|/answer/create/${question.id}|}" th:object="${answerForm}" method="post" class="my-3">
-        <div th:replace="~{form_errors :: formErrorsFragment}"></div>
-        <textarea th:field="*{content}" sec:authorize="isAnonymous()" disabled rows="10" class="form-control"></textarea>
-        <textarea th:field="*{content}" sec:authorize="isAuthenticated()" rows="10" class="form-control"></textarea>
-        <input type="submit" value="답변등록" class="btn btn-primary my-2">
-    </form>
+    <!-- 답변 페이징 시작 -->
+    <div th:if="${!paging.isEmpty()}">
+		<ul class="pagination justify-content-center">
+			<li class="page-item" th:classappend="${!paging.hasPrevious}?'disabled'">
+				<a class="page-link" href="javascript:void(0);" th:data-page="${paging.number}">
+					<span>이전</span>
+				</a>
+			</li>
+			<li th:each="page:${#numbers.sequence(1,paging.totalPages)}"
+				th:if="${page >= paging.number-4 && page <= paging.number+6}"
+				th:classappend="${page == paging.number+1}?'active'"
+				class="page-item">
+				<a class="page-link" th:text="${page}" href="javascript:void(0);" th:data-page="${page}"></a>
+			</li>
+			<li class="page-item" th:classappend="${!paging.hasNext}?'disabled'">
+				<a class="page-link" href="javascript:void(0);" th:data-page="${paging.number+2}">
+					<span>다음</span>
+				</a>
+			</li>
+		</ul>
+	</div>
+    <!-- 답변 페이징 끝 -->
+    <!-- 답변 작성 -->  
+    <div sec:authorize="isAuthenticated()">
+	    <form th:action="@{|/answer/create/${question.id}|}" th:object="${answerForm}" method="post" class="my-3">
+			<div th:replace="~{form_errors :: formErrorsFragment}"></div>
+			<textarea sec:authorize="isAnonymous()" disabled th:field="*{content}" class="form-control"	rows="10"></textarea>
+			<textarea sec:authorize="isAuthenticated()" th:field="*{content}" class="form-control" rows="10"></textarea>
+			<input type="submit" value="답변등록" class="btn btn-primary my-2">
+		</form>
+	</div>
+    
+    <div id="pageCount" th:data-value="${#lists.size(question.answerList)}"></div>
+    <form method="get" id="searchForm">
+ 		<input type="hidden" id="setSortType" name="setSortType" th:value="createDate">
+		<input type="hidden" id="page" name="page" th:value="${paging.number+1}">
+	</form>
 </div>
 <script layout:fragment="script" type='text/javascript'>
+const PAGE_SIZE = 4;
+
 const delete_elements = document.getElementsByClassName("delete");
 Array.from(delete_elements).forEach(function(element){
 	element.addEventListener('click', function(){
 		if(confirm("정말로 삭제하시겠습니까?")){
-			location.href = this.dataset.uri;
+			let setSortType = getCookie("setSortType");
+			let page = getCookie("page");
+			let pageCount = document.getElementById("pageCount").dataset.value;
+			if(pageCount%PAGE_SIZE==1&&page>1){
+				page = page - 1;
+				document.cookie = "page=" + page;
+			}
+			location.href = this.dataset.uri + "?setSortType=" + setSortType + "&page=" + page;
 		};
 	});
 });
@@ -101,10 +165,46 @@ const recommend_elements = document.getElementsByClassName("recommend");
 Array.from(recommend_elements).forEach(function(element){
 	element.addEventListener('click', function(){
 		if(confirm("정말로 추천하시겠습니까?")){
-			location.href = this.dataset.uri;
+			let setSortType = getCookie("setSortType");
+			let page = getCookie("page");
+			location.href = this.dataset.uri + "?setSortType=" + setSortType + "&page=" + page;
 		};
 	});
 });
+
+const page_elements = document.getElementsByClassName("page-link");
+Array.from(page_elements).forEach(function(element){
+	element.addEventListener('click', function(){
+		document.getElementById('setSortType').value = getCookie("setSortType");
+		document.getElementById('page').value = this.dataset.page;
+		document.cookie = "page=" + this.dataset.page +  ";path=/";
+		document.getElementById('searchForm').submit();
+	});
+});
+
+function getCookie(cname) {
+	  let name = cname + "=";
+	  let ca = document.cookie.split(';');
+	  for(let i = 0; i < ca.length; i++) {
+	    let c = ca[i];
+	    while (c.charAt(0) == ' ') {
+	      c = c.substring(1);
+	    }
+	    if (c.indexOf(name) == 0) {
+	      return c.substring(name.length, c.length);
+	    }
+	  }
+	  return "";
+}
+
+function setSortType(cvalue, exdays){
+	const d = new Date();
+	d.setTime(d.getTime() + (exdays*24*60*60*1000));
+	let expires = "expires="+ d.toUTCString();
+	document.cookie = "setSortType=" + cvalue + ";" + expires + ";path=/";
+	document.getElementById('setSortType').value = cvalue;
+	document.getElementById('searchForm').submit();
+}
 
 </script>
 </html>
