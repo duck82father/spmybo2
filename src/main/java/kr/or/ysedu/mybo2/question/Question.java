@@ -45,4 +45,6 @@ public class Question {
 	
 	@ManyToMany
 	Set<SiteUser> voter;
+	
+	private Integer viewCount;
 }

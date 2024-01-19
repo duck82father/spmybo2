@@ -96,4 +96,14 @@ public class QuestionService {
 		this.questionRepository.save(question);
 	}
 	
+	public void addViewCount(Question question) {
+		Integer questionViewCount = question.getViewCount();
+		if (questionViewCount==null) {
+			question.setViewCount(1);
+		} else {
+			question.setViewCount(questionViewCount+1);
+		}
+		this.questionRepository.save(question);
+	}
+	
 }
