@@ -2,6 +2,7 @@ package kr.or.ysedu.mybo2.answer;
 
 import java.security.Principal;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -40,7 +41,9 @@ public class AnswerController {
 		Question question = this.questionService.getQuestion(id);
 		SiteUser siteUser = this.userService.getUser(principal.getName());
 		if (bindingResult.hasErrors()) {
+			Page<Answer> paging = this.answerService.getListBySortRule(question, 1, "createDate");
 			model.addAttribute("question", question);
+			model.addAttribute("paging", paging);
 			return "question_detail";
 		}
 		Answer answer = this.answerService.create(question, answerForm.getContent(), siteUser);

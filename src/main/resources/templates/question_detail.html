@@ -133,6 +133,10 @@
 			<textarea sec:authorize="isAnonymous()" disabled th:field="*{content}" class="form-control"	rows="10"></textarea>
 			<textarea sec:authorize="isAuthenticated()" th:field="*{content}" class="form-control" rows="10"></textarea>
 			<input type="submit" value="답변등록" class="btn btn-primary my-2">
+			
+			<input type="hidden" id="answerSetSortType" name="setSortType" value="">
+			<input type="hidden" id="answerPage" name="page" value="">
+
 		</form>
 	</div>
     
