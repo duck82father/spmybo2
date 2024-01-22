@@ -13,10 +13,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import kr.or.ysedu.mybo2.answer.Answer;
 import kr.or.ysedu.mybo2.user.SiteUser;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -45,6 +47,9 @@ public class Question {
 	
 	@ManyToMany
 	Set<SiteUser> voter;
+
+	@ManyToMany
+	Set<SiteUser> viewers;
 	
 	private Integer viewCount;
 }

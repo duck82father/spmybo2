@@ -47,9 +47,13 @@ public class QuestionController {
 	public String detail(Model model, @PathVariable("id") Integer id,
 			AnswerForm answerForm,
 			@RequestParam(value="page", defaultValue = "1") int page,
-			@RequestParam(value="setSortType", defaultValue = "createDate") String setSortType) {
+			@RequestParam(value="setSortType", defaultValue = "createDate") String setSortType,
+			Principal principal) {
 		Question question = this.questionService.getQuestion(id);
-		this.questionService.addViewCount(question);
+		if(principal!=null){
+			SiteUser viewer = this.userService.getUser(principal.getName());
+			this.questionService.addViewCount(question, viewer);
+		} 
 		model.addAttribute(question);
 		model.addAttribute("setSortType", setSortType);
 		Page<Answer> paging = this.answerService.getListBySortRule(question, page, setSortType);
