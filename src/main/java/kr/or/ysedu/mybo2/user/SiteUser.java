@@ -28,6 +28,6 @@ public class SiteUser {
 	private String email;
 	
 	@ManyToOne
-	private Question questionView;	
+	private Question questionView;
 	
 }

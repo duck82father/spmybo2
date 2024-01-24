@@ -1,19 +1,16 @@
-package kr.or.ysedu.mybo2.answer;
+package kr.or.ysedu.mybo2.comment;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
 
-import jakarta.persistence.CascadeType;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import kr.or.ysedu.mybo2.comment.Comment;
+import jakarta.validation.constraints.Max;
+import kr.or.ysedu.mybo2.answer.Answer;
 import kr.or.ysedu.mybo2.question.Question;
 import kr.or.ysedu.mybo2.user.SiteUser;
 import lombok.Getter;
@@ -22,31 +19,24 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Answer {
+public class Comment {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	@Column(columnDefinition = "TEXT")
-	private String content;
+	@Column(length = 50)
+	private String comment;
 	
 	private LocalDateTime createDate;
 	
 	@ManyToOne
-	private Question question;
-	
-	@ManyToOne
 	private SiteUser author;
 	
-	@OneToMany(mappedBy = "answer", cascade = CascadeType.REMOVE)
-	private List<Comment> commentList;
+	@ManyToOne
+	private Question question; 
 	
-	private LocalDateTime modifyDate;
-	
-	@ManyToMany
-	Set<SiteUser> voter;
-	
-	private Integer voteCount;
+	@ManyToOne
+	private Answer answer;
 	
 }

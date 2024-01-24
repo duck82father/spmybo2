@@ -6,6 +6,7 @@
         <div class="card-body">
             <div class="card-text" th:utext="${@commonUtil.markdown(question.content)}"></div>
 			
+			<!-- 추천, 작성자, 저장 시간 시작 -->
 			<div class="row">
 			
 				<div class="col-6 mt-3">
@@ -38,7 +39,35 @@
 	            </div>
 			
 			</div>            
+			<!-- 추천, 작성자, 저장 시간 끝 -->
 
+			<!-- 질문: Comment 시작 -->
+			<div class="mt-4 mb-2 container border-top border-Emphasis border-1">
+				<div class="p-1"></div>
+				<div class="border-bottom row initialism" th:each="comment:${question.commentList}" th:id="|comment_${comment.id}|">
+					<span class="col-2 p-2 ps-3 fw-bold" th:text="${comment.author.username}"></span>
+					<span class="col-7 p-2 ps-3" th:text="${comment.comment}"></span>
+					<span class="col-2 p-2 pe-3 d-flex justify-content-end" th:text="${#temporals.format(comment.createDate, 'yyyy-MM-dd HH:mm')}"></span>
+					<div class="col-1 p-2 pe-4 d-flex justify-content-end" sec:authorize="isAuthenticated()"
+						th:if="${#authentication.getPrincipal().getUsername()==comment.author.username}">
+						<form th:action="@{|/comment/delete/${comment.id}|}" method="post">
+							<button type="submit" class="btn-close delete" aria-label="Close"></button>
+						</form>
+					</div>
+				</div>
+
+				<div class="row pt-3 initialism d-flex" sec:authorize="isAuthenticated()">
+					<span class="col-2 ps-3 text-secondary">코멘트 남기기&nbsp;&nbsp;></span>
+					
+					<span class="col-10">
+						<form th:action="@{|/comment/q/create/${question.id}|}" th:object="${commentForm}" method="post">
+						<input style="width:90%;" id="comment" name="comment" value="" maxlength="50">
+						<input style="width:9%;" type="submit" value="작성하기">
+						</form>
+					</span>
+				</div>
+			</div>
+            <!-- 질문: Comment 끝 -->
             
         </div>
     </div>
@@ -51,12 +80,12 @@
 	    </div>
 	    <div class="col-6 d-flex justify-content-end my-auto px-4 fw-bold fs-6">
 		    <form>
-					<input type="radio" id="createDate" name="fav_language" value="createDate"
-						onclick="setSortType('createDate',7)" th:checked="${setSortType=='createDate'}?'checked'">
-					작성일 기준
-					<input class="ms-2" type="radio" id="votes" name="fav_language" value="votes"
-						onclick="setSortType('voteCount',7)" th:checked="${setSortType=='voteCount'}?'checked'">
-					추천수 기준
+				<input type="radio" id="createDate" name="fav_language" value="createDate"
+					onclick="setSortType('createDate',7)" th:checked="${setSortType=='createDate'}?'checked'">
+				작성일 기준
+				<input class="ms-2" type="radio" id="votes" name="fav_language" value="votes"
+					onclick="setSortType('voteCount',7)" th:checked="${setSortType=='voteCount'}?'checked'">
+				추천수 기준
 			</form>
 		</div>
 </div> 
@@ -100,6 +129,36 @@
 	            </div>
 	            
 			</div>
+			
+			<!-- 답변: Comment 시작 -->
+			<div class="mt-4 mb-2 container border-top border-Emphasis border-1">
+				<div class="p-1"></div>
+				<div class="border-bottom row initialism" th:each="comment:${answer.commentList}" th:id="|comment_${comment.id}|">
+					<span class="col-2 p-2 ps-3 fw-bold" th:text="${comment.author.username}"></span>
+					<span class="col-7 p-2 ps-3" th:text="${comment.comment}"></span>
+					<span class="col-2 p-2 pe-3 d-flex justify-content-end" th:text="${#temporals.format(comment.createDate, 'yyyy-MM-dd HH:mm')}"></span>
+					<div class="col-1 p-2 pe-4 d-flex justify-content-end" sec:authorize="isAuthenticated()"
+						th:if="${#authentication.getPrincipal().getUsername()==comment.author.username}">
+						<form th:action="@{|/comment/delete/${comment.id}|}" method="post">
+							<button type="submit" class="btn-close delete" aria-label="Close"></button>
+						</form>
+					</div>
+				</div>
+
+				<div class="row pt-3 initialism d-flex" sec:authorize="isAuthenticated()">
+					<span class="col-2 ps-3 text-secondary">코멘트 남기기&nbsp;&nbsp;></span>
+					
+					<span class="col-10">
+						<form th:action="@{|/comment/a/create/${answer.id}|}" th:object="${commentForm}" method="post">
+						<input style="width:90%;" id="comment" name="comment" value="" maxlength="50">
+						<input style="width:9%;" type="submit" value="작성하기">
+						</form>
+					</span>
+				</div>
+			</div>
+            <!-- 답변: Comment 끝 -->
+			
+			
 
         </div>
     </div>

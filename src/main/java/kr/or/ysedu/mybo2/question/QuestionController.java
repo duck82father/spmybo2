@@ -61,7 +61,6 @@ public class QuestionController {
 		return "question_detail";
 	}
 
-	
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/create")
 	public String questionCreate(QuestionForm questionForm) {
@@ -74,7 +73,7 @@ public class QuestionController {
 			BindingResult bindingResult, Principal principal) {
 		if (bindingResult.hasErrors()) {
 			return "question_form";
-		}		
+		}
 		SiteUser siteUser = this.userService.getUser(principal.getName());
 		this.questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser);
 		return "redirect:/question/list";
