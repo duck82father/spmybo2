@@ -20,6 +20,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import kr.or.ysedu.mybo2.DataNotFoundException;
 import kr.or.ysedu.mybo2.answer.Answer;
+import kr.or.ysedu.mybo2.comment.Comment;
 import kr.or.ysedu.mybo2.user.SiteUser;
 import lombok.RequiredArgsConstructor;
 
@@ -38,10 +39,12 @@ public class QuestionService {
 				query.distinct(true);		// 중복 제거
 				Join<Question, SiteUser> u1 = q.join("author", JoinType.LEFT);
 				Join<Question, Answer> a = q.join("answerList", JoinType.LEFT);
+				Join<Question, Comment> c = q.join("commentList", JoinType.LEFT);
 				Join<Answer, SiteUser> u2 = a.join("author", JoinType.LEFT);
 				return cb.or(cb.like(q.get("subject"), "%" + kw + "%"),		// 제목
 						cb.like(q.get("content"), "%" + kw + "%"),			// 내용
 						cb.like(u1.get("username"), "%" + kw + "%"),		// 질문 작성자
+						cb.like(c.get("comment"), "%" + kw + "%"),			// 코멘트
 						cb.like(a.get("content"), "%" + kw + "%"),			// 답변 내용
 						cb.like(u2.get("username"), "%" + kw + "%")			// 답변 작성자
 						);
