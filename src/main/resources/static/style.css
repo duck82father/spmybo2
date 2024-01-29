@@ -1,5 +1,19 @@
 @charset "UTF-8";
+@media (max-width:768px) {
+
+	.pc-only {
+		display:none;	
+	};
+	
+}
+
 
 .card-body-gray {
 	background-color:#f7fff4;
 }
+
+.pc-only {
+    height: 1.25em;
+    align-self: center;
+};
+

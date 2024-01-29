@@ -12,6 +12,15 @@
             <label for="content" class="form-label">내용</label>
             <textarea th:field="*{content}" class="form-control" rows="10"></textarea>
         </div>
+        <div>
+        	<select name="category" class="form-select" aria-label="Default select example">
+			  <option value="">카테고리 선택</option>
+			  <option value="info">정보 게시판</option>
+			  <option value="humor">유머 게시판</option>
+			  <option value="qna">Q&A 게시판</option>
+			  <option value="notice" hidden>공지 게시판</option>
+			</select>
+        </div>
         <input type="submit" value="저장하기" class="btn btn-primary my-2">
     </form>
 </div>

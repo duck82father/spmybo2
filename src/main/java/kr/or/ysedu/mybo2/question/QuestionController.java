@@ -17,13 +17,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.validation.Valid;
+import kr.or.ysedu.mybo2.Category.Category;
+import kr.or.ysedu.mybo2.Category.CategoryService;
 import kr.or.ysedu.mybo2.answer.Answer;
 import kr.or.ysedu.mybo2.answer.AnswerForm;
 import kr.or.ysedu.mybo2.answer.AnswerService;
 import kr.or.ysedu.mybo2.user.SiteUser;
 import kr.or.ysedu.mybo2.user.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequestMapping("/question")
 @RequiredArgsConstructor
 @Controller
@@ -32,14 +36,20 @@ public class QuestionController {
 	private final QuestionService questionService;
 	private final AnswerService answerService;
 	private final UserService userService;
+	private final CategoryService categoryService;
 	
-	@GetMapping("/list")
-	public String list(Model model,
+	@GetMapping("/list/{categoryName}")
+	public String listCategory(Model model,
 			@RequestParam(value = "page", defaultValue = "1") int page,
-			@RequestParam(value = "kw", defaultValue = "") String kw) { 
-		Page<Question> paging = this.questionService.getList(page, kw);
+			@RequestParam(value = "kw", defaultValue = "") String kw,
+			@PathVariable("categoryName") String categoryName) {
+		Category category = this.categoryService.getCategory(categoryName);
+//		Integer categoryId = category.getId();
+		Page<Question> paging = this.questionService.getList(page, kw, category);
+		log.info(">> "+paging.toString());
 		model.addAttribute("paging", paging);
 		model.addAttribute("kw", kw);
+		model.addAttribute("category", category);
 		return "question_list";
 	}
 	
@@ -53,11 +63,13 @@ public class QuestionController {
 		if(principal!=null){
 			SiteUser viewer = this.userService.getUser(principal.getName());
 			this.questionService.addViewCount(question, viewer);
-		} 
+		}
 		model.addAttribute(question);
 		model.addAttribute("setSortType", setSortType);
+		Category category = this.categoryService.getCategory(question.getCategory().getCategory());
 		Page<Answer> paging = this.answerService.getListBySortRule(question, page, setSortType);
 		model.addAttribute("paging", paging);
+		model.addAttribute("category", category);
 		return "question_detail";
 	}
 
@@ -74,9 +86,11 @@ public class QuestionController {
 		if (bindingResult.hasErrors()) {
 			return "question_form";
 		}
+		String categoryName = questionForm.getCategory();
+		Category category = this.categoryService.getCategory(categoryName);
 		SiteUser siteUser = this.userService.getUser(principal.getName());
-		this.questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser);
-		return "redirect:/question/list";
+		this.questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser, category);
+		return String.format("redirect:/question/list/%s", categoryName);
 	}
 
 	@PreAuthorize("isAuthenticated()")
@@ -115,8 +129,9 @@ public class QuestionController {
 		if (!question.getAuthor().getUsername().equals(principal.getName())) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"삭제권한이 없습니다.");
 		}
+		String categoryName = question.getCategory().getCategory();
 		this.questionService.delete(question);
-		return "redirect:/";
+		return String.format("redirect:/question/list/%s", categoryName);
 	}
 	
 	@PreAuthorize("isAuthenticated()")

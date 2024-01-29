@@ -19,6 +19,7 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import kr.or.ysedu.mybo2.DataNotFoundException;
+import kr.or.ysedu.mybo2.Category.Category;
 import kr.or.ysedu.mybo2.answer.Answer;
 import kr.or.ysedu.mybo2.comment.Comment;
 import kr.or.ysedu.mybo2.user.SiteUser;
@@ -30,7 +31,7 @@ public class QuestionService {
 
 	private final QuestionRepository questionRepository;
 	
-	private Specification<Question> search(String kw){
+	private Specification<Question> search(String kw, Category category){
 		return new Specification<>() {
 			private static final long serialVersionUID = 1L;
 			
@@ -39,15 +40,19 @@ public class QuestionService {
 				query.distinct(true);		// 중복 제거
 				Join<Question, SiteUser> u1 = q.join("author", JoinType.LEFT);
 				Join<Question, Answer> a = q.join("answerList", JoinType.LEFT);
-				Join<Question, Comment> c = q.join("commentList", JoinType.LEFT);
+				Join<Question, Comment> cm = q.join("commentList", JoinType.LEFT);
+				Join<Question, Category> cg = q.join("category", JoinType.LEFT);
 				Join<Answer, SiteUser> u2 = a.join("author", JoinType.LEFT);
-				return cb.or(cb.like(q.get("subject"), "%" + kw + "%"),		// 제목
-						cb.like(q.get("content"), "%" + kw + "%"),			// 내용
-						cb.like(u1.get("username"), "%" + kw + "%"),		// 질문 작성자
-						cb.like(c.get("comment"), "%" + kw + "%"),			// 코멘트
-						cb.like(a.get("content"), "%" + kw + "%"),			// 답변 내용
-						cb.like(u2.get("username"), "%" + kw + "%")			// 답변 작성자
-						);
+				
+				return cb.and(cb.equal(q.get("category"), category),									// 카테고리 번호
+							cb.or(cb.like(q.get("subject"), "%" + kw + "%"),		// 제목
+								cb.like(q.get("content"), "%" + kw + "%"),			// 내용
+								cb.like(u1.get("username"), "%" + kw + "%"),		// 질문 작성자
+								cb.like(cm.get("comment"), "%" + kw + "%"),			// 코멘트
+								cb.like(a.get("content"), "%" + kw + "%"),			// 답변 내용
+								cb.like(u2.get("username"), "%" + kw + "%")		// 답변 작성자
+							)
+				);				
 			}
 		};
 	}
@@ -66,20 +71,21 @@ public class QuestionService {
 		}
 	}
 	
-	public Page<Question> getList(int page, String kw){
+	public Page<Question> getList(int page, String kw, Category category){
 		List<Sort.Order> sorts = new ArrayList<>();
 		sorts.add(Sort.Order.desc("createDate"));
 		Pageable pageable = PageRequest.of(page-1, 10, Sort.by(sorts));
-		Specification<Question> spec = search(kw);
+		Specification<Question> spec = search(kw, category); 
 		return this.questionRepository.findAll(spec, pageable);
 	}
 	
-	public void create(String subject, String content, SiteUser user) {
+	public void create(String subject, String content, SiteUser user, Category category) {
 		Question question = new Question();
 		question.setSubject(subject);
 		question.setContent(content);
 		question.setCreateDate(LocalDateTime.now());
 		question.setAuthor(user);
+		question.setCategory(category);
 		this.questionRepository.save(question);
 	}
 	

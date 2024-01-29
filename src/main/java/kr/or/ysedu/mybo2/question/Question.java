@@ -14,6 +14,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import kr.or.ysedu.mybo2.Category.Category;
 import kr.or.ysedu.mybo2.answer.Answer;
 import kr.or.ysedu.mybo2.comment.Comment;
 import kr.or.ysedu.mybo2.user.SiteUser;
@@ -56,4 +57,7 @@ public class Question {
 	Set<SiteUser> viewers;
 	
 	private Integer viewCount;
+	
+	@ManyToOne
+	private Category category;
 }
